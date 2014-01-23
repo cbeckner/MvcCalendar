@@ -36,9 +36,9 @@ namespace XYZ.CalendarHelper
             return Calendar(helper, monthToRender, new List<CalendarEvent>(), htmlAttributes);
         }
 
-        public static MvcHtmlString Calendar(this HtmlHelper helper, DateTime monthToRender, List<CalendarEvent> blockedDates)
+        public static MvcHtmlString Calendar(this HtmlHelper helper, DateTime monthToRender, List<CalendarEvent> events)
         {
-            return Calendar(helper, monthToRender, blockedDates, null);
+            return Calendar(helper, monthToRender, events, null);
         }
 
         public static MvcHtmlString Calendar(this HtmlHelper helper, DateTime monthToRender, List<CalendarEvent> events, object htmlAttributes)
