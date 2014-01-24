@@ -7,6 +7,9 @@ using System.Web.Mvc;
 
 namespace XYZ.CalendarHelper
 {
+    /// <summary>
+    /// The MVC Calendar Extension for HtmlHelper
+    /// </summary>
     public static class CalendarExtension
     {
         private const string Style = @"
@@ -21,26 +24,55 @@ namespace XYZ.CalendarHelper
             </style>
             ";
 
+        /// <summary>
+        /// Generates HTML for a calendar control
+        /// </summary>
+        /// <param name="helper">The HtmlHelper being extended</param>
+        /// <returns>HTML to display a calendar</returns>
         public static MvcHtmlString CalendarCss(this HtmlHelper helper)
         {
             return MvcHtmlString.Create(Style);
         }
-
+        /// <summary>
+        /// Generates HTML for a calendar control
+        /// </summary>
+        /// <param name="helper">The HtmlHelper being extended</param>
+        /// <param name="monthToRender">A DateTime object representing the month that should be displayed</param>
+        /// <returns>HTML to display a calendar</returns>
         public static MvcHtmlString Calendar(this HtmlHelper helper, DateTime monthToRender)
         {
             return Calendar(helper, monthToRender, new List<CalendarEvent>(), null);
         }
-
+        /// <summary>
+        /// Generates HTML for a calendar control
+        /// </summary>
+        /// <param name="helper">The HtmlHelper being extended</param>
+        /// <param name="monthToRender">A DateTime object representing the month that should be displayed</param>
+        /// <param name="htmlAttributes">Optional attributes that will be applied to the parent table of the calendar</param>
+        /// <returns>HTML to display a calendar</returns>
         public static MvcHtmlString Calendar(this HtmlHelper helper, DateTime monthToRender, object htmlAttributes)
         {
             return Calendar(helper, monthToRender, new List<CalendarEvent>(), htmlAttributes);
         }
-
+        /// <summary>
+        /// Generates HTML for a calendar control
+        /// </summary>
+        /// <param name="helper">The HtmlHelper being extended</param>
+        /// <param name="monthToRender">A DateTime object representing the month that should be displayed</param>
+        /// <param name="events">A list of events to display on the calendar.</param>
+        /// <returns>HTML to display a calendar</returns>
         public static MvcHtmlString Calendar(this HtmlHelper helper, DateTime monthToRender, List<CalendarEvent> events)
         {
             return Calendar(helper, monthToRender, events, null);
         }
-
+        /// <summary>
+        /// Generates HTML for a calendar control
+        /// </summary>
+        /// <param name="helper">The HtmlHelper being extended</param>
+        /// <param name="monthToRender">A DateTime object representing the month that should be displayed</param>
+        /// <param name="events">A list of events to display on the calendar.</param>
+        /// <param name="htmlAttributes">Optional attributes that will be applied to the parent table of the calendar</param>
+        /// <returns>HTML to display a calendar</returns>
         public static MvcHtmlString Calendar(this HtmlHelper helper, DateTime monthToRender, List<CalendarEvent> events, object htmlAttributes)
         {
             TagBuilder calendar = new TagBuilder("table");
@@ -96,7 +128,7 @@ namespace XYZ.CalendarHelper
                     var match = matches.FirstOrDefault();
                     dayTag.Attributes.Add("style", "background-color:" + match.DisplayColor);
 
-                    if (match.EndDate.Date.Equals(day))
+                    if (match.EndDate.Date.Equals(day) && match.AngledStartEnd)
                     {
                         dayTag.InnerHtml = "<div class=\"cal-ar\" style=\"border-left-color:" + match.DisplayColor + "\"></div>";
                         dayTag.Attributes.Remove("style");
@@ -107,7 +139,7 @@ namespace XYZ.CalendarHelper
                     else
                         dayTag.InnerHtml += i.ToString();
 
-                    if (match.StartDate.Date.Equals(day))
+                    if (match.StartDate.Date.Equals(day) && match.AngledStartEnd)
                     {
                         dayTag.InnerHtml += "<div class=\"cal-al\" style=\"border-right-color:" + match.DisplayColor + "\"></div>";
                         dayTag.Attributes.Remove("style");
@@ -118,7 +150,7 @@ namespace XYZ.CalendarHelper
                 {
                     var match = matches.First();
 
-                    if (match.EndDate.Date.Equals(day))
+                    if (match.EndDate.Date.Equals(day) && match.AngledStartEnd)
                         dayTag.InnerHtml = "<div class=\"cal-ar\" style=\"border-left-color:" + match.DisplayColor + "\"></div>";
 
                     match = matches.Last();
@@ -127,7 +159,7 @@ namespace XYZ.CalendarHelper
                     else
                         dayTag.InnerHtml += i.ToString();
 
-                    if (match.StartDate.Date.Equals(day))
+                    if (match.StartDate.Date.Equals(day) && match.AngledStartEnd)
                         dayTag.InnerHtml += "<div class=\"cal-al\" style=\"border-right-color:" + match.DisplayColor + "\"></div>";
                 }
                 else
