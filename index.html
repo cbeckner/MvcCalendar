@@ -1,0 +1,130 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>MVC Calendar by cbeckner</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">MVC Calendar</h1>
+        <p class="header">An inline calendar display HTML Helper for ASP.Net MVC</p>
+
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/cbeckner/MvcCalendar/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/cbeckner/MvcCalendar/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/cbeckner/MvcCalendar">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/cbeckner">cbeckner</a></p>
+
+
+      </header>
+      <section>
+        <h1>
+<a name="aspnet-mvc-calendar-html-helper" class="anchor" href="#aspnet-mvc-calendar-html-helper"><span class="octicon octicon-link"></span></a>Asp.Net MVC Calendar Html Helper</h1>
+
+<p>An inline calendar display HTML Helper for ASP.Net MVC</p>
+
+<h2>
+<a name="using" class="anchor" href="#using"><span class="octicon octicon-link"></span></a>Using</h2>
+
+<p>Using it can be as simple as:</p>
+
+<pre lang="asp"><code>&lt;%=Html.Calendar() %&gt;
+</code></pre>
+
+<p>or</p>
+
+<pre lang="asp"><code>@Html.Calendar()
+</code></pre>
+
+<p>That's It!</p>
+
+<h2>
+<a name="additional-options" class="anchor" href="#additional-options"><span class="octicon octicon-link"></span></a>Additional Options</h2>
+
+<p>I am working to make the control as extensible as possible for the various scenarios that it will hopefully be used for.  As such, there are several overloads that you can take advantage of.</p>
+
+<p>You can specify the month that you want the calendar to display by passing in a <em>DateTime</em> object.</p>
+
+<pre lang="asp"><code>@Html.Calendar(DateTime.Now)
+</code></pre>
+
+<h2>
+<a name="events" class="anchor" href="#events"><span class="octicon octicon-link"></span></a>Events</h2>
+
+<p>You can also fill the calendar with events by passing in a list of <em>CalendarEvent</em> objects.</p>
+
+<pre lang="asp"><code>@{
+  var events = new List&lt;CalendarEvent&gt;();
+  events.Add(new CalendarEvent(new DateTime(2014, 1, 15), new DateTime(2014, 1, 20), "#333333", "viewDate(12345"));     
+}
+@=Html.Calendar(DateTime.Now,events)
+</code></pre>
+
+<p>The <em>CalendarEvent</em> object takes the following arguments:</p>
+
+<ul>
+<li>
+<strong>StartDate</strong> : The date the event begins.</li>
+<li>
+<strong>EndDate</strong> : The date the event ends.</li>
+<li>
+<strong>DisplayColor</strong> : The color that will be applied to the event when it is placed on the calendar. (optional. defaults to #999999)</li>
+<li>
+<strong>CallbackFunction</strong> : A javascript function that will be called when the event is clicked on. (optional)</li>
+</ul><p>Additionally, the <em>CalendarEvent</em> class exposes two functions.</p>
+
+<ul>
+<li>
+<strong>Dates</strong> : Enumerates all of the dates included in the event to include the start and end date.</li>
+<li>
+<strong>ContainsDate(DateTime)</strong> : Returns true/false depending whether the provided date is in the range of Dates.</li>
+</ul><h2>
+<a name="styling" class="anchor" href="#styling"><span class="octicon octicon-link"></span></a>Styling</h2>
+
+<p>There is an additional helper that will provide some out of the box styling for the calendar.  This should be called prior to calling the first calendar on your page.  If you want to override one or two of the styles, I would suggest calling the css helper in the head of the site and then overriding the classes in your pages stylesheet.</p>
+
+<p>To call the CSS control</p>
+
+<pre lang="asp"><code>@Html.CalendarCss()
+</code></pre>
+
+<p>The CSS exposes the following classes:</p>
+
+<ul>
+<li>
+<strong>.cal-body</strong> : This styles the table element for the calendar</li>
+<li>
+<strong>.cal-body th</strong> : The style for the header elements.  This will define how the days of the week are displayed.</li>
+<li>
+<strong>.cal-body td</strong> : The style for the dates.  This will define alignment and cell size.</li>
+<li>
+<strong>.cal-body a</strong> : How any callback links should be styled.<br>
+</li>
+<li>
+<strong>.cal-x</strong> : How empty (non-date) cells should be rendered.</li>
+<li>
+<strong>.cal-ar</strong> : How the end date will be rendered. By default it is an triangle.</li>
+<li>
+<strong>.cal-al</strong> : How the start date will be rendered.  By default it is a triangle.</li>
+</ul><p>Copyright 2014 by Cody Beckner!</p>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="http://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		
+  </body>
+</html>
