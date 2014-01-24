@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>$id$</id>
-    <version>0.6</version>
+    <version>1.0</version>
     <title>$title$</title>
     <authors>Cody Beckner</authors>
     <owners>Cody Beckner</owners>
@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/cbeckner/MvcCalendar</projectUrl>    
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>An inline calendar display HTML Helper for ASP.Net MVC</description>
-    <releaseNotes>Updated calendar HTML output</releaseNotes>
+    <releaseNotes>Version 1 Release. Includes additional styling options and code hinting.</releaseNotes>
     <copyright>Copyright 2014</copyright>
     <tags>MVC Calendar</tags>
   </metadata>
