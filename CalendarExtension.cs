@@ -41,7 +41,7 @@ namespace XYZ.CalendarHelper
         /// <returns>HTML to display a calendar</returns>
         public static MvcHtmlString Calendar(this HtmlHelper helper, DateTime monthToRender)
         {
-            return Calendar(helper, monthToRender, new List<CalendarEvent>(), null);
+            return Calendar(helper, monthToRender, new List<CalendarEvent>(), new List<CalendarDate>(), null);
         }
         /// <summary>
         /// Generates HTML for a calendar control
@@ -52,7 +52,7 @@ namespace XYZ.CalendarHelper
         /// <returns>HTML to display a calendar</returns>
         public static MvcHtmlString Calendar(this HtmlHelper helper, DateTime monthToRender, object htmlAttributes)
         {
-            return Calendar(helper, monthToRender, new List<CalendarEvent>(), htmlAttributes);
+            return Calendar(helper, monthToRender, new List<CalendarEvent>(), new List<CalendarDate>(), htmlAttributes);
         }
         /// <summary>
         /// Generates HTML for a calendar control
@@ -63,7 +63,30 @@ namespace XYZ.CalendarHelper
         /// <returns>HTML to display a calendar</returns>
         public static MvcHtmlString Calendar(this HtmlHelper helper, DateTime monthToRender, List<CalendarEvent> events)
         {
-            return Calendar(helper, monthToRender, events, null);
+            return Calendar(helper, monthToRender, events, new List<CalendarDate>(), null);
+        }
+        /// <summary>
+        /// Generates HTML for a calendar control
+        /// </summary>
+        /// <param name="helper">The HtmlHelper being extended</param>
+        /// <param name="monthToRender">A DateTime object representing the month that should be displayed</param>
+        /// <param name="dates">A list of individual dates to display on the calendar.</param>
+        /// <returns>HTML to display a calendar</returns>
+        public static MvcHtmlString Calendar(this HtmlHelper helper, DateTime monthToRender, List<CalendarDate> dates)
+        {
+            return Calendar(helper, monthToRender, new List<CalendarEvent>(), dates, null);
+        }
+        /// <summary>
+        /// Generates HTML for a calendar control
+        /// </summary>
+        /// <param name="helper">The HtmlHelper being extended</param>
+        /// <param name="monthToRender">A DateTime object representing the month that should be displayed</param>
+        /// <param name="dates">A list of individual dates to display on the calendar.</param>
+        /// <param name="htmlAttributes">Optional attributes that will be applied to the parent table of the calendar</param>
+        /// <returns>HTML to display a calendar</returns>
+        public static MvcHtmlString Calendar(this HtmlHelper helper, DateTime monthToRender, List<CalendarDate> dates, object htmlAttributes)
+        {
+            return Calendar(helper, monthToRender, new List<CalendarEvent>(), dates, null);
         }
         /// <summary>
         /// Generates HTML for a calendar control
@@ -74,6 +97,11 @@ namespace XYZ.CalendarHelper
         /// <param name="htmlAttributes">Optional attributes that will be applied to the parent table of the calendar</param>
         /// <returns>HTML to display a calendar</returns>
         public static MvcHtmlString Calendar(this HtmlHelper helper, DateTime monthToRender, List<CalendarEvent> events, object htmlAttributes)
+        {
+            return Calendar(helper, monthToRender, events, new List<CalendarDate>(), htmlAttributes);
+        }
+
+        private static MvcHtmlString Calendar(HtmlHelper helper, DateTime monthToRender, List<CalendarEvent> events = null, List<CalendarDate> dates = null, object htmlAttributes = null)
         {
             TagBuilder calendar = new TagBuilder("table");
             calendar.Attributes.Add("class", "cal-body");
@@ -164,7 +192,18 @@ namespace XYZ.CalendarHelper
                 }
                 else
                 {
-                    dayTag.SetInnerText(i.ToString());
+                    if (dates.Any(d => d.Date == day.Date))
+                    {
+                        var singleMatch = dates.First(d => d.Date == day.Date);
+                        if (!String.IsNullOrEmpty(singleMatch.CallbackFunction))
+                            dayTag.InnerHtml += String.Format("<a href=\"javascript:void(0)\" onclick=\"{0}\">{1}</a>", singleMatch.CallbackFunction, i.ToString());
+                        else
+                            dayTag.InnerHtml += i.ToString();
+                    }
+                    else
+                    {
+                        dayTag.SetInnerText(i.ToString());
+                    }
                 }
 
                 row.InnerHtml += dayTag.ToString();
@@ -192,5 +231,5 @@ namespace XYZ.CalendarHelper
             }
             return MvcHtmlString.Create(calendar.ToString(TagRenderMode.Normal));
         }
-    }    
+    }
 }
