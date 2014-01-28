@@ -18,13 +18,14 @@ namespace XYZ.CalendarHelper
         /// <param name="displayColor">(optional) The color used to represent the event.  Can be in either "#XXXXXXX" or "rgba(XXX,XXX,XXX,XXX)" formats.</param>
         /// <param name="callbackFunction">(optional) A javascript callback function that will fire when the event is clicked.</param>
         /// <param name="angledStartEnd">(optional) Determines whether an angle should be used to represent the start and end of an event</param>
-        public CalendarEvent(DateTime startDate, DateTime endDate, String displayColor = "#999999", String callbackFunction = null, bool angledStartEnd = true)
+        public CalendarEvent(DateTime startDate, DateTime endDate, String displayColor = "#999999", String callbackFunction = null, bool angledStartEnd = true, int displayOrder = 10)
         {
             StartDate = startDate;
             EndDate = endDate;
             DisplayColor = displayColor;
             CallbackFunction = callbackFunction;
             AngledStartEnd = angledStartEnd;
+            DisplayOrder = displayOrder;
         }
         /// <summary>
         /// The Event Start Date
@@ -33,7 +34,11 @@ namespace XYZ.CalendarHelper
         /// <summary>
         /// The Event End Date
         /// </summary>
-        public DateTime EndDate { get; set; }
+        public DateTime EndDate { get; set; }        
+        /// <summary>
+        /// Determines whether an angle should be used to represent the start and end of an event
+        /// </summary>
+        public bool AngledStartEnd { get; set; }
         /// <summary>
         /// The color used to represent the event.  Can be in either "#XXXXXXX" or "rgba(XXX,XXX,XXX,XXX)" formats.
         /// </summary>
@@ -43,9 +48,9 @@ namespace XYZ.CalendarHelper
         /// </summary>
         public String CallbackFunction { get; set; }
         /// <summary>
-        /// Determines whether an angle should be used to represent the start and end of an event
+        /// Determines the order of preference if multiple matches exist for a single date.  Lower numbers get higher priority.
         /// </summary>
-        public bool AngledStartEnd { get; set; }
+        public int DisplayOrder { get; set; }
         /// <summary>
         /// An enumeration of all the dates represented by this event.  Includes Start and End dates.
         /// </summary>

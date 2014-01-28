@@ -134,9 +134,11 @@ namespace XYZ.CalendarHelper
             List<TagBuilder> monthRows = new List<TagBuilder>();
             TagBuilder row = new TagBuilder("tr");
             int columnCount = 0;
+            string previousColor = string.Empty;
             for (int i = 1; i <= DateTime.DaysInMonth(monthToRender.Year, monthToRender.Month); i++)
             {
-                DateTime day = new DateTime(monthToRender.Year, monthToRender.Month, i);
+                DateTime day = new DateTime(monthToRender.Year, monthToRender.Month, i);                
+
                 if (i == 1)
                 {
                     foreach (string dow in days)
@@ -151,15 +153,25 @@ namespace XYZ.CalendarHelper
                 TagBuilder dayTag = new TagBuilder("td");
                 //See if there is a match
                 var matches = events.Where(b => b.ContainsDate(day));
-                if (matches.Count() == 1)
+                if (matches.Any())
                 {
-                    var match = matches.FirstOrDefault();
-                    dayTag.Attributes.Add("style", "background-color:" + match.DisplayColor);
+                    var match = matches.OrderBy(d => d.DisplayOrder).First();
 
-                    if (match.EndDate.Date.Equals(day) && match.AngledStartEnd)
+                    if ((match.EndDate.Date.Equals(day) || 
+                        (!String.IsNullOrEmpty(previousColor) && previousColor != match.DisplayColor)) 
+                        && match.AngledStartEnd)
                     {
-                        dayTag.InnerHtml = "<div class=\"cal-ar\" style=\"border-left-color:" + match.DisplayColor + "\"></div>";
+                        if(match.EndDate.Date.Equals(day))
+                            dayTag.InnerHtml = "<div class=\"cal-ar\" style=\"border-left-color:" + match.DisplayColor + "\"></div>";
+                        else
+                            dayTag.InnerHtml = "<div class=\"cal-ar\" style=\"border-left-color:" + previousColor + "\"></div>";
                         dayTag.Attributes.Remove("style");
+                        previousColor = string.Empty;
+                    }
+                    else
+                    {
+                        dayTag.Attributes.Add("style", "background-color:" + match.DisplayColor);
+                        previousColor = match.DisplayColor;
                     }
 
                     if (!String.IsNullOrEmpty(match.CallbackFunction))
@@ -172,29 +184,14 @@ namespace XYZ.CalendarHelper
                         dayTag.InnerHtml += "<div class=\"cal-al\" style=\"border-right-color:" + match.DisplayColor + "\"></div>";
                         dayTag.Attributes.Remove("style");
                     }
-
-                }
-                else if (matches.Count() > 1)
-                {
-                    var match = matches.First();
-
-                    if (match.EndDate.Date.Equals(day) && match.AngledStartEnd)
-                        dayTag.InnerHtml = "<div class=\"cal-ar\" style=\"border-left-color:" + match.DisplayColor + "\"></div>";
-
-                    match = matches.Last();
-                    if (!String.IsNullOrEmpty(match.CallbackFunction))
-                        dayTag.InnerHtml += String.Format("<a href=\"javascript:void(0)\" onclick=\"{0}\">{1}</a>", match.CallbackFunction, i.ToString());
-                    else
-                        dayTag.InnerHtml += i.ToString();
-
-                    if (match.StartDate.Date.Equals(day) && match.AngledStartEnd)
-                        dayTag.InnerHtml += "<div class=\"cal-al\" style=\"border-right-color:" + match.DisplayColor + "\"></div>";
                 }
                 else
                 {
                     if (dates.Any(d => d.Date == day.Date))
                     {
+                        previousColor = string.Empty;
                         var singleMatch = dates.First(d => d.Date == day.Date);
+                        dayTag.Attributes.Add("style", "background-color:" + singleMatch.DisplayColor);
                         if (!String.IsNullOrEmpty(singleMatch.CallbackFunction))
                             dayTag.InnerHtml += String.Format("<a href=\"javascript:void(0)\" onclick=\"{0}\">{1}</a>", singleMatch.CallbackFunction, i.ToString());
                         else
