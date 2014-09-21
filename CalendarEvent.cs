@@ -18,7 +18,7 @@ namespace XYZ.CalendarHelper
         /// <param name="displayColor">(optional) The color used to represent the event.  Can be in either "#XXXXXXX" or "rgba(XXX,XXX,XXX,XXX)" formats.</param>
         /// <param name="callbackFunction">(optional) A javascript callback function that will fire when the event is clicked.</param>
         /// <param name="angledStartEnd">(optional) Determines whether an angle should be used to represent the start and end of an event</param>
-        public CalendarEvent(DateTime startDate, DateTime endDate, String displayColor = "#999999", String callbackFunction = null, bool angledStartEnd = true, int displayOrder = 10)
+        public CalendarEvent(DateTime startDate, DateTime endDate, String tooltip = "", String displayColor = "#999999", String callbackFunction = null, bool angledStartEnd = true, int displayOrder = 10)
         {
             StartDate = startDate;
             EndDate = endDate;
@@ -26,6 +26,7 @@ namespace XYZ.CalendarHelper
             CallbackFunction = callbackFunction;
             AngledStartEnd = angledStartEnd;
             DisplayOrder = displayOrder;
+            Tooltip = tooltip;
         }
         /// <summary>
         /// The Event Start Date
@@ -70,5 +71,9 @@ namespace XYZ.CalendarHelper
         {
             return Dates.Contains(date.Date);
         }
+        /// <summary>
+        /// Text that will be added to the title element for the event
+        /// </summary>
+        public string Tooltip { get; set; }
     }
 }
