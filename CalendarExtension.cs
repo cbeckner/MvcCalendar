@@ -156,7 +156,6 @@ namespace XYZ.CalendarHelper
                 if (matches.Any())
                 {
                     var match = matches.OrderBy(d => d.DisplayOrder).First();
-
                     if ((match.EndDate.Date.Equals(day) || 
                         (!String.IsNullOrEmpty(previousColor) && previousColor != match.DisplayColor)) 
                         && match.AngledStartEnd)
@@ -167,6 +166,11 @@ namespace XYZ.CalendarHelper
                             dayTag.InnerHtml = "<div class=\"cal-ar\" style=\"border-left-color:" + previousColor + "\"></div>";
                         dayTag.Attributes.Remove("style");
                         previousColor = string.Empty;
+
+
+                        var underlyingMatch = matches.Where(x => !match.EndDate.Date.Equals(day)).FirstOrDefault();
+                        if (underlyingMatch != null)
+                            dayTag.InnerHtml += "<div class=\"cal-al\" style=\"border-right-color:" + underlyingMatch.DisplayColor + "\"></div>";
                     }
                     else
                     {
