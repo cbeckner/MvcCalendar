@@ -16,11 +16,12 @@ namespace XYZ.CalendarHelper
             <style type='text/css'>
             .cal-body {border-spacing: 3px; border-collapse: separate; margin: 10px 20px 10px 15px;}
                 .cal-body th {color: #666;border-bottom: 1px solid #ddd;}
-                .cal-body td {text-align: center;padding: 5px 5px 2px 5px;position:relative;}
+                .cal-body td {text-align: center;}
+                .cal-body td div { position:relative; padding: 5px 5px 2px;}
                 .cal-body a {text-decoration:none; color:#000;}
+            .cal-body td div div.cal-ar {width: 0; height: 0; border-bottom: 18px solid transparent;border-left: 18px solid;position:absolute;top:0;left:0; padding:0}
+            .cal-body td div div.cal-al {width: 0; height: 0; border-top: 18px solid transparent;border-right:18px solid; position:absolute;bottom:0;right:0; padding:0}
             .cal-x {background-color: transparent;}
-            .cal-ar {width: 0; height: 0; border-bottom: 18px solid transparent;border-left: 18px solid;position:absolute;top:0;left:0;}
-            .cal-al {width: 0; height: 0; border-top: 18px solid transparent;border-right:18px solid; position:absolute;bottom:0;right:0;}
             </style>
             ";
 
@@ -52,7 +53,7 @@ namespace XYZ.CalendarHelper
         /// <returns>HTML to display a calendar</returns>
         public static MvcHtmlString Calendar(this HtmlHelper helper, DateTime monthToRender, object htmlAttributes)
         {
-            return Calendar(helper, monthToRender, new List<CalendarEvent>(), new List<CalendarDate>(), htmlAttributes);
+            return Calendar(helper, monthToRender, new List<CalendarEvent>(), new List<CalendarDate>(), htmlAttributes: htmlAttributes);
         }
         /// <summary>
         /// Generates HTML for a calendar control
@@ -98,10 +99,26 @@ namespace XYZ.CalendarHelper
         /// <returns>HTML to display a calendar</returns>
         public static MvcHtmlString Calendar(this HtmlHelper helper, DateTime monthToRender, List<CalendarEvent> events, object htmlAttributes)
         {
-            return Calendar(helper, monthToRender, events, new List<CalendarDate>(), htmlAttributes);
+            return Calendar(helper, monthToRender, events, new List<CalendarDate>(), htmlAttributes: htmlAttributes);
         }
 
-        private static MvcHtmlString Calendar(HtmlHelper helper, DateTime monthToRender, List<CalendarEvent> events = null, List<CalendarDate> dates = null, object htmlAttributes = null)
+        public static MvcHtmlString Calendar(this HtmlHelper helper, DateTime monthToRender, List<CalendarDate> dates, string defaultCallbackFunction, string defaultTooltip, object htmlAttributes)
+        {
+            return Calendar(helper, monthToRender, new List<CalendarEvent>(), dates, defaultCallbackFunction, defaultTooltip, htmlAttributes);
+        }
+
+        public static MvcHtmlString Calendar(this HtmlHelper helper, DateTime monthToRender, List<CalendarEvent> events, string defaultCallbackFunction, string defaultTooltip, object htmlAttributes)
+        {
+            return Calendar(helper, monthToRender, events, new List<CalendarDate>(), defaultCallbackFunction, defaultTooltip, htmlAttributes);
+        }
+
+        private static MvcHtmlString Calendar(HtmlHelper helper,
+            DateTime monthToRender,
+            List<CalendarEvent> events = null,
+            List<CalendarDate> dates = null,
+            string defaultCallbackFunction = null,
+            string defaultTooltip = null,
+            object htmlAttributes = null)
         {
             TagBuilder calendar = new TagBuilder("table");
             calendar.Attributes.Add("class", "cal-body");
@@ -134,7 +151,7 @@ namespace XYZ.CalendarHelper
             List<TagBuilder> monthRows = new List<TagBuilder>();
             TagBuilder row = new TagBuilder("tr");
             int columnCount = 0;
-            string previousColor = string.Empty;
+            CalendarEvent previousMatch = null;
             for (int i = 1; i <= DateTime.DaysInMonth(monthToRender.Year, monthToRender.Month); i++)
             {
                 DateTime day = new DateTime(monthToRender.Year, monthToRender.Month, i);                
@@ -150,40 +167,41 @@ namespace XYZ.CalendarHelper
                         columnCount++;
                     }
                 }
-                TagBuilder dayTag = new TagBuilder("td");
+                TagBuilder dayTagWrapper = new TagBuilder("td");
+                TagBuilder dayTag = new TagBuilder("div");                
                 //See if there is a match
                 var matches = events.Where(b => b.ContainsDate(day));
                 if (matches.Any())
                 {
                     var match = matches.OrderBy(d => d.DisplayOrder).First();
                     if ((match.EndDate.Date.Equals(day) || 
-                        (!String.IsNullOrEmpty(previousColor) && previousColor != match.DisplayColor)) 
+                        ((previousMatch != null) && previousMatch.DisplayColor != match.DisplayColor))
                         && match.AngledStartEnd)
                     {
-                        if(match.EndDate.Date.Equals(day))
+                        if (match.EndDate.Date.Equals(day))
                             dayTag.InnerHtml = "<div class=\"cal-ar\" style=\"border-left-color:" + match.DisplayColor + "\"></div>";
                         else
-                            dayTag.InnerHtml = "<div class=\"cal-ar\" style=\"border-left-color:" + previousColor + "\"></div>";
+                            dayTag.InnerHtml = "<div class=\"cal-ar\" style=\"border-left-color:" + previousMatch.DisplayColor + "\"></div>";
                         dayTag.Attributes.Remove("style");
-                        previousColor = string.Empty;
-
-
-                        var underlyingMatch = matches.Where(x => !match.EndDate.Date.Equals(day)).FirstOrDefault();
-                        if (underlyingMatch != null)
-                            dayTag.InnerHtml += "<div class=\"cal-al\" style=\"border-right-color:" + underlyingMatch.DisplayColor + "\"></div>";
+                        if(previousMatch != null)
+                            dayTag.InnerHtml += "<div class=\"cal-al\" style=\"border-right-color:" + previousMatch.DisplayColor + "\"></div>";
+                        previousMatch = null;
                     }
                     else
                     {
                         dayTag.Attributes.Add("style", "background-color:" + match.DisplayColor);
-                        previousColor = match.DisplayColor;
+                        previousMatch = match;
                     }
 
                     if (!String.IsNullOrEmpty(match.CallbackFunction))
-                        dayTag.InnerHtml += String.Format("<a href=\"javascript:void(0)\" onclick=\"{0}\">{1}</a>", match.CallbackFunction, i.ToString());
+                        dayTag.InnerHtml += String.Format("<a href=\"javascript:void(0)\" title=\"{2}\" onclick=\"{0}\">{1}</a>", match.CallbackFunction, i.ToString(), match.Tooltip);
                     else
-                        dayTag.InnerHtml += i.ToString();
+                        dayTag.InnerHtml += "<a title=\"" + match.Tooltip + "\">" + i.ToString() + "</a>";
 
-                    if (match.StartDate.Date.Equals(day) && match.AngledStartEnd)
+                    if ((match.StartDate.Date.Equals(day) ||
+                        ((previousMatch !=null) && day == previousMatch.EndDate && 
+                        (day > match.StartDate && day < match.EndDate)))
+                        && match.AngledStartEnd)
                     {
                         dayTag.InnerHtml += "<div class=\"cal-al\" style=\"border-right-color:" + match.DisplayColor + "\"></div>";
                         dayTag.Attributes.Remove("style");
@@ -193,21 +211,33 @@ namespace XYZ.CalendarHelper
                 {
                     if (dates.Any(d => d.Date == day.Date))
                     {
-                        previousColor = string.Empty;
+                        previousMatch = null;
                         var singleMatch = dates.First(d => d.Date == day.Date);
                         dayTag.Attributes.Add("style", "background-color:" + singleMatch.DisplayColor);
                         if (!String.IsNullOrEmpty(singleMatch.CallbackFunction))
-                            dayTag.InnerHtml += String.Format("<a href=\"javascript:void(0)\" onclick=\"{0}\">{1}</a>", singleMatch.CallbackFunction, i.ToString());
+                            dayTag.InnerHtml += String.Format("<a href=\"javascript:void(0)\" title=\"{2}\" onclick=\"{0}\">{1}</a>", singleMatch.CallbackFunction, i.ToString(), singleMatch.Tooltip);
                         else
-                            dayTag.InnerHtml += i.ToString();
+                            dayTag.InnerHtml += "<a title=\"" + singleMatch.Tooltip + "\">" + i.ToString() + "</a>";
                     }
                     else
                     {
+                        if (String.IsNullOrEmpty(defaultCallbackFunction))
                         dayTag.SetInnerText(i.ToString());
+                        else
+                        {
+                            if (string.IsNullOrEmpty(defaultTooltip))
+                            {
+                                dayTag.InnerHtml += "<a onclick=\"" + defaultCallbackFunction + "\">" + i.ToString() + "</a>";
+                            }
+                            else
+                            {
+                                dayTag.InnerHtml += "<a title=\"" + defaultTooltip + "\" onclick=\"" + defaultCallbackFunction + "\">" + i.ToString() + "</a>";
+                            }
+                        }
                     }
                 }
-
-                row.InnerHtml += dayTag.ToString();
+                dayTagWrapper.InnerHtml = dayTag.ToString();
+                row.InnerHtml += dayTagWrapper.ToString();
                 columnCount++;
                 if (columnCount == 7)
                 {
