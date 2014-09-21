@@ -20,12 +20,13 @@ namespace XYZ.CalendarHelper
         /// <param name="date">The DateTime value to populate the object</param>
         /// <param name="displayColor">(optional) The color used to represent the event.  Can be in either "#XXXXXXX" or "rgba(XXX,XXX,XXX,XXX)" formats.</param>
         /// <param name="callbackFunction">(optional) A javascript callback function that will fire when the event is clicked.</param>
-        public CalendarDate(DateTime date, String displayColor = "#999999", String callbackFunction = null, int displayOrder = 10)
+        public CalendarDate(DateTime date, string tooltip = "", String displayColor = "#999999", String callbackFunction = null, int displayOrder = 10)
         {
             _date = date;
             DisplayColor = displayColor;
             CallbackFunction = callbackFunction;
             DisplayOrder = displayOrder;
+            Tooltip = tooltip;
         }
         /// <summary>
         /// Instantiates a new CalendarDate object using ticks
@@ -33,12 +34,13 @@ namespace XYZ.CalendarHelper
         /// <param name="ticks">The ticks to represent the date value</param>
         /// <param name="displayColor">(optional) The color used to represent the event.  Can be in either "#XXXXXXX" or "rgba(XXX,XXX,XXX,XXX)" formats.</param>
         /// <param name="callbackFunction">(optional) A javascript callback function that will fire when the event is clicked.</param>
-        public CalendarDate(long ticks, String displayColor = "#999999", String callbackFunction = null, int displayOrder = 10)
+        public CalendarDate(long ticks, string tooltip = "", String displayColor = "#999999", String callbackFunction = null, int displayOrder = 10)
         {
             _date = new DateTime(ticks);
             DisplayColor = displayColor;
             CallbackFunction = callbackFunction;
             DisplayOrder = displayOrder;
+            Tooltip = tooltip;
         }
         /// <summary>
         /// Instantiates a new CalendarDate object
@@ -47,12 +49,13 @@ namespace XYZ.CalendarHelper
         /// <param name="kind">Specifies whether the date represented is local, UTC, or neither</param>
         /// <param name="displayColor">(optional) The color used to represent the event.  Can be in either "#XXXXXXX" or "rgba(XXX,XXX,XXX,XXX)" formats.</param>
         /// <param name="callbackFunction">(optional) A javascript callback function that will fire when the event is clicked.</param>
-        public CalendarDate(long ticks, DateTimeKind kind, String displayColor = "#999999", String callbackFunction = null, int displayOrder = 10)
+        public CalendarDate(long ticks, DateTimeKind kind, string tooltip = "", String displayColor = "#999999", String callbackFunction = null, int displayOrder = 10)
         {
             _date = new DateTime(ticks, kind);
             DisplayColor = displayColor;
             CallbackFunction = callbackFunction;
             DisplayOrder = displayOrder;
+            Tooltip = tooltip;
         }
         /// <summary>
         /// Instantiates a new CalendarDate object using the year, month and day.
@@ -62,12 +65,13 @@ namespace XYZ.CalendarHelper
         /// <param name="day">The day to represent</param>
         /// <param name="displayColor">(optional) The color used to represent the event.  Can be in either "#XXXXXXX" or "rgba(XXX,XXX,XXX,XXX)" formats.</param>
         /// <param name="callbackFunction">(optional) A javascript callback function that will fire when the event is clicked.</param>
-        public CalendarDate(int year, int month, int day, String displayColor = "#999999", String callbackFunction = null, int displayOrder = 10)
+        public CalendarDate(int year, int month, int day, string tooltip = "", String displayColor = "#999999", String callbackFunction = null, int displayOrder = 10)
         {
             _date = new DateTime(year, month, day);
             DisplayColor = displayColor;
             CallbackFunction = callbackFunction;
             DisplayOrder = displayOrder;
+            Tooltip = tooltip;
         }
         /// <summary>
         /// Instantiates a new CalendarDate object using the year, month and day
@@ -78,12 +82,13 @@ namespace XYZ.CalendarHelper
         /// <param name="calendar">Represents time in divisions such as weeks, months and years</param>
         /// <param name="displayColor">(optional) The color used to represent the event.  Can be in either "#XXXXXXX" or "rgba(XXX,XXX,XXX,XXX)" formats.</param>
         /// <param name="callbackFunction">(optional) A javascript callback function that will fire when the event is clicked.</param>
-        public CalendarDate(int year, int month, int day, System.Globalization.Calendar calendar, String displayColor = "#999999", String callbackFunction = null, int displayOrder = 10)
+        public CalendarDate(int year, int month, int day, System.Globalization.Calendar calendar,string tooltip = "", String displayColor = "#999999", String callbackFunction = null, int displayOrder = 10)
         {
             _date = new DateTime(year, month, day, calendar);
             DisplayColor = displayColor;
             CallbackFunction = callbackFunction;
             DisplayOrder = displayOrder;
+            Tooltip = tooltip;
         }
         /// <summary>
         /// The Current Date
@@ -114,5 +119,9 @@ namespace XYZ.CalendarHelper
         /// Determines the order of preference if multiple matches exist for a single date.  Lower numbers get higher priority.
         /// </summary>
         public int DisplayOrder { get; set; }
+        /// <summary>
+        /// Text that will be added to the title element for the date
+        /// </summary>
+        public string Tooltip { get; set; }
     }
 }
