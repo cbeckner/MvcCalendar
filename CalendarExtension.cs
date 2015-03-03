@@ -49,12 +49,26 @@ namespace XYZ.CalendarHelper
         /// </summary>
         /// <param name="helper">The HtmlHelper being extended</param>
         /// <param name="monthToRender">A DateTime object representing the month that should be displayed</param>
-        /// <param name="htmlAttributes">Optional attributes that will be applied to the parent table of the calendar</param>
+        /// <param name="beforeDayRender">A function to customize the day cell before it is rendered</param>
         /// <returns>HTML to display a calendar</returns>
-        public static MvcHtmlString Calendar(this HtmlHelper helper, DateTime monthToRender, object htmlAttributes)
+        public static MvcHtmlString Calendar(this HtmlHelper helper, DateTime monthToRender, Action<DateTime, TagBuilder, TagBuilder> beforeDayRender)
         {
-            return Calendar(helper, monthToRender, new List<CalendarEvent>(), new List<CalendarDate>(), htmlAttributes: htmlAttributes);
+            return Calendar(helper, monthToRender, new List<CalendarEvent>(), new List<CalendarDate>(), null, BeforeDayRender: beforeDayRender);
         }
+        
+        /// <summary>
+        /// Generates HTML for a calendar control
+        /// </summary>
+        /// <param name="helper">The HtmlHelper being extended</param>
+        /// <param name="monthToRender">A DateTime object representing the month that should be displayed</param>
+        /// <param name="htmlAttributes">Optional attributes that will be applied to the parent table of the calendar</param>
+        /// <param name="beforeDayRender">A function to customize the day cell before it is rendered</param>
+        /// <returns>HTML to display a calendar</returns>
+        public static MvcHtmlString Calendar(this HtmlHelper helper, DateTime monthToRender, Action<DateTime, TagBuilder, TagBuilder> beforeDayRender, object htmlAttributes)
+        {
+            return Calendar(helper, monthToRender, new List<CalendarEvent>(), new List<CalendarDate>(), htmlAttributes: htmlAttributes, BeforeDayRender: beforeDayRender);
+        }
+
         /// <summary>
         /// Generates HTML for a calendar control
         /// </summary>
@@ -118,7 +132,8 @@ namespace XYZ.CalendarHelper
             List<CalendarDate> dates = null,
             string defaultCallbackFunction = null,
             string defaultTooltip = null,
-            object htmlAttributes = null)
+            object htmlAttributes = null, 
+            Action<DateTime, TagBuilder, TagBuilder> BeforeDayRender = null)
         {
             TagBuilder calendar = new TagBuilder("table");
             calendar.Attributes.Add("class", "cal-body");
@@ -236,6 +251,7 @@ namespace XYZ.CalendarHelper
                         }
                     }
                 }
+                BeforeDayRender(day, dayTagWrapper, dayTag);
                 dayTagWrapper.InnerHtml = dayTag.ToString();
                 row.InnerHtml += dayTagWrapper.ToString();
                 columnCount++;
