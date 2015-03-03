@@ -51,9 +51,22 @@ namespace XYZ.CalendarHelper
         /// <param name="monthToRender">A DateTime object representing the month that should be displayed</param>
         /// <param name="beforeDayRender">A function to customize the day cell before it is rendered</param>
         /// <returns>HTML to display a calendar</returns>
-        public static MvcHtmlString Calendar(this HtmlHelper helper, DateTime monthToRender, Action<DateTime, TagBuilder, TagBuilder> beforeDayRender)
+        public static MvcHtmlString Calendar(this HtmlHelper helper, DateTime monthToRender, object htmlAttributes)
         {
-            return Calendar(helper, monthToRender, new List<CalendarEvent>(), new List<CalendarDate>(), null, BeforeDayRender: beforeDayRender);
+            return Calendar(helper, monthToRender, new List<CalendarEvent>(), new List<CalendarDate>(), null, htmlAttributes: htmlAttributes);
+        }
+
+        /// <summary>
+        /// Generates HTML for a calendar control
+        /// </summary>
+        /// <param name="helper">The HtmlHelper being extended</param>
+        /// <param name="monthToRender">A DateTime object representing the month that should be displayed</param>
+        /// <param name="htmlAttributes">Optional attributes that will be applied to the parent table of the calendar</param>
+        /// <param name="beforeDayRender">A function to customize the day cell before it is rendered</param>
+        /// <returns>HTML to display a calendar</returns>
+        public static MvcHtmlString Calendar(this HtmlHelper helper, DateTime monthToRender, object htmlAttributes, Action<DateTime, TagBuilder, TagBuilder> beforeDayRender)
+        {
+            return Calendar(helper, monthToRender, new List<CalendarEvent>(), new List<CalendarDate>(), htmlAttributes: htmlAttributes, BeforeDayRender: beforeDayRender);
         }
         
         /// <summary>
